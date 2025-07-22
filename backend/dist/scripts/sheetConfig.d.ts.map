@@ -1,0 +1,1 @@
+{"version":3,"file":"sheetConfig.d.ts","sourceRoot":"","sources":["../../src/scripts/sheetConfig.ts"],"names":[],"mappings":"AAMA,iBAAe,sBAAsB,IAAI,OAAO,CAAC,IAAI,CAAC,CAiCrD;AAKD,iBAAe,cAAc,CAAC,UAAU,CAAC,EAAE,MAAM,EAAE,GAAG,OAAO,CAAC,IAAI,CAAC,CA6BlE;AAKD,iBAAe,kBAAkB,IAAI,OAAO,CAAC,IAAI,CAAC,CA4EjD;AA8DD,OAAO,EAAE,sBAAsB,EAAE,cAAc,EAAE,kBAAkB,EAAE,CAAC"}
