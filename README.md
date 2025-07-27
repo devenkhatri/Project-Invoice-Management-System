@@ -1,541 +1,334 @@
 # Project Invoice Management System
 
-A comprehensive project and invoice management system for solopreneurs, built with React, Node.js, and Google Sheets as the backend database. 
+A comprehensive project and invoice management system for solopreneurs, built with React, Node.js, and Google Sheets as the backend database.
 
 ## Features
 
-- **Project Management**: Complete project and task management with time tracking
-- **Invoice Management**: Automated invoice generation with GST compliance
-- **Client Management**: Comprehensive client database with secure portal access
-- **Payment Processing**: Integrated payment gateways (Stripe, PayPal, Razorpay)
-- **Financial Dashboard**: Real-time metrics, charts, and reporting
-- **Analytics & Reporting**: Revenue tracking, expense analysis, and project profitability
-- **Google Sheets Backend**: Reliable data storage with direct access to your data
-- **Progressive Web App**: Enhanced offline support with connectivity monitoring
-- **Mobile Responsive**: Optimized for all device types with touch-friendly interfaces
+- **Project Management**: Complete project lifecycle management with task tracking, time estimation, and progress monitoring
+- **Task Management**: Hierarchical task organization with priority levels, status tracking, and time logging
+- **Client Management**: Comprehensive client profiles with GST compliance and payment terms
+- **Invoice Generation**: Professional invoice creation with GST calculations and multiple status tracking
+- **Time Tracking**: Detailed time entry logging with task and project association
+- **Expense Management**: Project-based expense tracking with receipt management
+- **Financial Reporting**: Real-time analytics and reporting capabilities
+- **Google Sheets Integration**: Robust data storage using Google Sheets API with full CRUD operations
+- **GST Compliance**: Built-in support for Indian GST requirements and calculations
+- **Type Safety**: Full TypeScript implementation with comprehensive type definitions
 
-## Setup Instructions
+## Tech Stack
+
+### Frontend
+- React 18 with TypeScript
+- Material-UI for components
+- React Router for navigation
+- Axios for API communication
+- Chart.js for data visualization
+
+### Backend
+- Node.js with Express.js
+- TypeScript for type safety
+- Google Sheets API for data storage
+- JWT for authentication
+- Comprehensive security middleware (Multi-tier rate limiting, CSRF protection, request sanitization, security headers)
+- Input validation with express-validator
+- Comprehensive testing with Jest
+
+## Getting Started
 
 ### Prerequisites
-
-- Node.js (v18 or higher recommended)
+- Node.js (v16 or higher)
 - npm or yarn
-- Google Cloud Platform account
-- Google Sheets API credentials
+- Google Cloud Platform account for Sheets API
 
-### Backend Setup
+### Installation
 
-1. Navigate to the backend directory:
+1. Clone the repository
+2. Install backend dependencies:
    ```bash
    cd backend
-   ```
-
-2. Install dependencies:
-   ```bash
    npm install
    ```
 
-3. Copy the environment file and configure:
+3. Install frontend dependencies:
    ```bash
-   cp .env.example .env
+   cd frontend
+   npm install
    ```
 
-4. Configure your `.env` file with:
-   - Google Sheets ID
-   - Google Service Account credentials
-   - JWT secrets
-   - Other API keys as needed
+4. Set up environment variables:
+   - Copy `backend/.env.example` to `backend/.env`
+   - Copy `frontend/.env.example` to `frontend/.env`
+   - Fill in the required values
 
-5. Start the development server:
+### Development
+
+1. Start the backend server:
    ```bash
+   cd backend
    npm run dev
    ```
 
-### Frontend Setup
-
-1. Navigate to the frontend directory:
+2. Start the frontend development server:
    ```bash
    cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Copy the environment file and configure:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Start the development server:
-   ```bash
    npm start
    ```
 
-### Google Sheets Setup
+3. Open http://localhost:3000 in your browser
 
-1. Create a new Google Sheets document
-2. Note the spreadsheet ID from the URL
-3. Create a Google Cloud Platform project
-4. Enable the Google Sheets API
-5. Create a service account and download the JSON key
-6. Share your Google Sheets document with the service account email
-7. Configure the environment variables with your credentials
+The backend server will run on http://localhost:3001 by default.
 
-### Initial Setup
+### Building for Production
 
-1. Start both backend and frontend servers
-2. Visit http://localhost:3000
-3. Check that the backend connection is successful
-4. Click "Initialize Google Sheets" to create the required sheets
+1. Build the backend:
+   ```bash
+   cd backend
+   npm run build
+   ```
+
+2. Build the frontend:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+### Testing
+
+Run tests for both frontend and backend:
+
+```bash
+# Backend tests
+cd backend
+npm test
+
+# Watch mode for backend tests
+npm run test:watch
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+The backend includes comprehensive test coverage with:
+- Model validation and business logic tests
+- Service integration tests with Google Sheets API
+- Utility function tests
+- Error handling and edge case testing
+
+### Code Quality
+
+The backend includes ESLint for code quality:
+
+```bash
+cd backend
+npm run lint        # Check for linting issues
+npm run lint:fix    # Auto-fix linting issues
+```
+
+## Dependencies
+
+### Backend Dependencies
+- **express**: Web framework for Node.js
+- **googleapis**: Google APIs client library for Sheets integration
+- **jsonwebtoken**: JWT token generation and verification
+- **cors**: Cross-Origin Resource Sharing middleware
+- **dotenv**: Environment variable management
+- **helmet**: Security middleware for Express
+- **express-rate-limit**: Rate limiting middleware
+- **express-mongo-sanitize**: NoSQL injection prevention
+- **express-validator**: Input validation and sanitization
+
+### Development Dependencies
+- **typescript**: TypeScript compiler and language support
+- **nodemon**: Development server with auto-restart
+- **jest**: Testing framework with TypeScript support
+- **eslint**: Code linting and quality checks
 
 ## Project Structure
 
 ```
-├── backend/                 # Node.js API server
+├── backend/
 │   ├── src/
-│   │   ├── config/         # Configuration files
-│   │   ├── models/         # Data models and types
-│   │   ├── routes/         # API route handlers
-│   │   ├── services/       # Business logic services
-│   │   ├── middleware/     # Authentication and validation
-│   │   ├── scripts/        # Google Sheets setup and utilities
-│   │   └── index.ts        # Main server file
-│   ├── package.json
-│   └── tsconfig.json
-├── frontend/               # React application
+│   │   ├── server.ts              # Express server setup with security middleware
+│   │   ├── test-setup.ts          # Jest test configuration and global setup
+│   │   ├── types/
+│   │   │   └── index.ts           # TypeScript type definitions for all data models
+│   │   ├── models/
+│   │   │   ├── *.ts               # Data model classes with definite assignment assertions
+│   │   │   └── __tests__/         # Model validation and business logic tests
+│   │   ├── middleware/
+│   │   │   └── auth.ts            # JWT authentication and authorization middleware
+│   │   ├── services/
+│   │   │   ├── sheets.service.ts  # Google Sheets API integration service
+│   │   │   ├── __tests__/         # Service integration tests
+│   │   │   └── README.md          # Service documentation
+│   │   ├── utils/
+│   │   │   └── validation.ts      # Data validation and sanitization utilities
+│   │   ├── validation/
+│   │   │   └── schemas.ts         # Joi validation schemas for all models
+│   │   └── scripts/
+│   │       └── init-sheets.ts     # Google Sheets initialization script
+│   ├── package.json               # Backend dependencies and scripts
+│   ├── tsconfig.json              # TypeScript configuration
+│   ├── jest.config.js             # Jest testing configuration
+│   ├── .eslintrc.js              # ESLint configuration
+│   └── .env.example              # Environment variables template
+├── frontend/
 │   ├── src/
-│   │   ├── components/     # React components
-│   │   │   ├── auth/       # Authentication components
-│   │   │   ├── clients/    # Client management components
-│   │   │   ├── dashboard/  # Dashboard and analytics components
-│   │   │   ├── invoices/   # Invoice management components
-│   │   │   ├── projects/   # Project management components
-│   │   │   └── common/     # Shared components
-│   │   ├── services/       # API client and services
-│   │   ├── pages/          # Page components
-│   │   ├── types/          # TypeScript type definitions
-│   │   └── App.tsx         # Main app component
+│   │   ├── App.tsx                # Main React component with routing
+│   │   ├── index.tsx              # React entry point
+│   │   └── services/
+│   │       └── api.ts             # API client configuration with interceptors
 │   ├── package.json
-│   └── tsconfig.json
-└── .kiro/specs/           # Project specifications and documentation
+│   ├── tsconfig.json
+│   └── .env.example
+├── .kiro/
+│   └── specs/                     # Project specifications and implementation plan
+└── README.md
 ```
 
-## Progressive Web App (PWA) Features
+## Data Models
 
-The application includes comprehensive PWA capabilities for enhanced user experience:
+The system uses comprehensive TypeScript interfaces and classes for type safety and data validation:
 
-### Offline Support
-- **Connectivity Monitoring**: Real-time detection of online/offline status
-- **Enhanced Detection**: Multiple methods including service worker integration
-- **Visual Feedback**: Automatic notifications for connectivity changes
-- **Graceful Degradation**: Limited functionality available when offline
+### Core Data Models
+All data models are implemented as TypeScript classes with definite assignment assertions for strict null checking and comprehensive validation:
 
-### Service Worker Integration
-- **Background Sync**: Automatic data synchronization when connection is restored
-- **Caching Strategy**: Intelligent caching of critical resources
-- **Offline Notifications**: Service worker-based connectivity monitoring
+- **User**: User authentication and authorization with role-based access control
+- **Project**: Complete project information with client association, status tracking, budget management, and timeline
+- **Task**: Hierarchical task management with priority levels, status tracking, time estimation, and project association
+- **Client**: Comprehensive client profiles with contact information, GST compliance, and payment terms
+- **Invoice**: Professional invoice management with line items, tax calculations, status tracking, and payment integration
+- **TimeEntry**: Detailed time tracking with task and project association for accurate billing
+- **Expense**: Project-based expense tracking with categorization and receipt management
 
-### Installation
-- **Install Prompts**: Native app-like installation on supported devices
-- **App Manifest**: Proper PWA manifest for home screen installation
-- **Responsive Design**: Optimized for mobile, tablet, and desktop usage
+### Data Model Features
+- **Type Safety**: All models use TypeScript definite assignment assertions (`!`) for required properties
+- **Validation**: Built-in validation using Joi schemas with comprehensive error handling
+- **Business Logic**: Each model includes business logic methods for calculations and status management
+- **Serialization**: JSON serialization and deserialization support for API communication
+- **GST Compliance**: Built-in support for Indian GST calculations and validation
 
-## Development
+### Authentication Types
+- **TokenPayload**: JWT token structure with user information and token type
+- **AuthTokens**: Access and refresh token pair for authentication
 
-- Backend runs on http://localhost:3001
-- Frontend runs on http://localhost:3000
-- API endpoints are available at http://localhost:3001/api
-- Health check: http://localhost:3001/health
-- PWA features available in production builds
+### Google Sheets Integration Types
+- **SheetConfig**: Sheet structure and header definitions
+- **QueryFilter**: Advanced filtering with operators (eq, ne, gt, lt, gte, lte, contains)
+- **QueryOptions**: Comprehensive query options with filtering, sorting, and pagination
+- **BatchOperation**: Efficient batch operations for bulk data management
+- **SheetsError**: Specialized error handling with retry logic
 
-## Testing
+## API Endpoints
 
-The project includes a comprehensive testing suite:
+### Core Endpoints
+- `GET /health` - Health check endpoint with system status
+- `GET /api` - API information and available endpoints
 
-### Backend Testing
+### Authentication Endpoints
+- `POST /api/auth/login` - User login with email and password
+- `POST /api/auth/refresh` - Refresh access token using refresh token
+- `POST /api/auth/logout` - Logout and revoke refresh token
+- `GET /api/auth/me` - Get current user information
 
-- **Unit Tests**: Test individual components in isolation
-- **Integration Tests**: Test interactions between components
-- **E2E Tests**: Test complete user flows from end to end
-- **Performance Tests**: Measure system performance under load
-- **System Integration Tests**: Validate all requirements and system functionality
+### Client Management Endpoints
+- `GET /api/clients` - Get all clients with search, filtering, and pagination
+  - Query parameters: `page`, `limit`, `search`, `country`, `is_active`, `gstin`, `sort_by`, `sort_order`
+  - Returns enhanced client data with project counts, financial metrics, and GST compliance status
+- `POST /api/clients` - Create a new client with GST validation (Admin only)
+  - Validates GSTIN and PAN formats for Indian clients
+  - Checks for duplicate email addresses
+- `GET /api/clients/:id` - Get a single client with comprehensive project and invoice data
+  - Includes financial summary, payment metrics, and communication history
+  - Calculates average payment time and outstanding amounts
+- `PUT /api/clients/:id` - Update client information (Admin only)
+  - Validates GST and PAN changes
+  - Logs activity for audit trail
+- `POST /api/clients/onboard` - Complete client onboarding workflow (Admin only)
+  - Creates client with document collection
+  - Optional portal access setup
+  - Returns next steps for client management
+- `GET /api/clients/:id/activities` - Get paginated client activity audit trail
+  - Tracks all client-related activities and changes
+- `PUT /api/clients/:id/portal-access` - Enable/disable client portal access (Admin only)
+  - Manages portal credentials and access permissions
+- `DELETE /api/clients/:id` - Soft delete a client with dependency validation (Admin only)
+  - Prevents deletion if active projects or unpaid invoices exist
+  - Performs soft delete by deactivating the client
 
-To run backend tests:
+**Note**: Non-GET requests require CSRF protection. Include the `x-csrf-token` header for POST, PUT, DELETE requests (except authentication endpoints).
 
-```bash
-cd backend
-npm test                                # Run all tests
-npm test -- --testPathPattern=e2e       # Run only E2E tests
-npm test -- --testPathPattern=unit      # Run only unit tests
-npm test -- --coverage                  # Generate coverage report
-npm run test:system                     # Run comprehensive system integration tests
-npm run test:requirements               # Validate requirements implementation
-npm run test:data-integrity             # Verify Google Sheets data integrity
-npm run test:gst-compliance             # Test GST compliance features
-```
+### Security Features
+- **JWT Authentication**: Dual-token system with access tokens (15 minutes) and refresh tokens (7 days)
+- **Role-Based Authorization**: Admin and client roles with resource-level access control
+- **Multi-Tier Rate Limiting**: Comprehensive rate limiting with different limits for various endpoints
+  - General API: 100 requests per 15 minutes
+  - Authentication: 5 attempts per 15 minutes
+  - Password Reset: 3 attempts per hour
+  - File Upload: 10 uploads per minute
+- **Request Sanitization**: XSS and injection attack prevention with recursive object sanitization
+- **NoSQL Injection Prevention**: MongoDB injection protection with monitoring and logging
+- **Security Headers**: Comprehensive HTTP security headers including CSP, XSS protection, and frame options
+- **CSRF Protection**: Cross-Site Request Forgery protection with token validation
+- **Security Monitoring**: Suspicious request pattern detection and comprehensive logging
+- **IP Whitelisting**: Optional IP-based access control for enhanced security
+- **Request Size Limits**: Configurable payload size limits (default: 10MB)
+- **API Key Validation**: External integration security with API key validation
 
-### System Integration Testing
+### Authentication System
+The system implements a comprehensive JWT-based authentication with:
+- **Access Tokens**: Short-lived (15 minutes) for API requests
+- **Refresh Tokens**: Long-lived (7 days) for token renewal
+- **Role-Based Access**: Admin users have full access, clients can only access their own resources
+- **Resource Authorization**: Fine-grained access control for projects, invoices, and client data
 
-The system includes a comprehensive integration test suite (`system-integration.test.ts`) that validates all major requirements:
-
-1. **Authentication & Security**: JWT token handling, refresh tokens, 2FA setup
-2. **Client Management**: Client CRUD operations with GST information
-3. **Project Management**: Projects, tasks, time tracking, and status updates
-4. **Document Management**: File uploads, sharing, and project associations
-5. **Expense Tracking**: Recording and retrieving project expenses
-6. **Invoice Management**: Generation, GST calculations, PDF export, and client communication
-7. **Payment Processing**: Payment links, partial payments, and invoice status updates
-8. **Financial Reporting**: Profitability reports, summaries, and data exports
-9. **GST Compliance**: GSTR1/GSTR3B reports, GST validation, and e-invoicing
-10. **Automation & Workflow**: Reminders, workflow rules, and triggered actions
-11. **Data Integrity**: Verification between API and Google Sheets, concurrent operations
-12. **System Monitoring**: Health status and performance metrics
-
-### System Integration Testing
-
-The system includes comprehensive integration testing to ensure all components work together correctly:
-
-#### Test Coverage
-
-- **End-to-End Workflows**: Complete user journeys from project creation to payment
-- **Requirements Validation**: Automated verification of all system requirements
-- **Data Integrity**: Validation of Google Sheets data consistency and referential integrity
-- **GST Compliance**: Testing of Indian tax regulations and e-invoicing requirements
-- **Performance Under Load**: Concurrent user testing and API response time validation
-
-#### Key Integration Test Features
-
-The `system-integration.test.ts` file provides comprehensive validation of all system requirements:
-
-- **Complete API Testing**: Tests all API endpoints and their interactions
-- **Sequential Workflow Testing**: Validates entire business processes from start to finish
-- **Data Consistency Checks**: Ensures data integrity across the system
-- **Concurrent Operation Testing**: Validates system behavior under parallel operations
-- **Error Handling Validation**: Verifies proper error responses and validation
-
-#### Test Reports
-
-System tests generate detailed reports in the `backend/reports` directory:
-- `system-test-report-YYYY-MM-DD.json`: Comprehensive system test results
-- `requirements-validation-YYYY-MM-DD.json`: Requirements implementation status
-- `data-integrity-YYYY-MM-DD.json`: Google Sheets data integrity report
-
-#### User Acceptance Testing
-
-A structured UAT process is defined in `backend/docs/user-acceptance-testing.md` with:
-- Detailed test scenarios for all major features
-- Step-by-step instructions for manual testing
-- Issue reporting templates and sign-off procedures
+More endpoints will be added as development progresses according to the implementation plan.
 
 ## Documentation
 
-The system includes comprehensive documentation:
+- **Backend API**: See `backend/README.md` for detailed backend documentation
+- **Specifications**: See `.kiro/specs/` directory for requirements, design, and implementation tasks
 
-- **User Guide**: Complete user documentation in `backend/docs/user-guide.md`
-- **API Documentation**: Detailed API endpoints and usage examples
-- **Developer Guide**: Setup instructions and development workflows
-- **Testing Guide**: Testing procedures and best practices
+## Recent Updates
 
-## API Documentation
+### Client Management System Implementation
+The backend now includes a comprehensive client management system with:
+- **Complete CRUD Operations**: Full client lifecycle management with validation
+- **GST Compliance**: Built-in GSTIN and PAN validation for Indian clients
+- **Financial Metrics**: Automatic calculation of payment metrics and outstanding amounts
+- **Activity Audit Trail**: Complete tracking of all client-related activities
+- **Portal Access Management**: Client portal access control with credential management
+- **Dependency Validation**: Smart deletion prevention for clients with active projects
+- **Enhanced Search & Filtering**: Advanced search capabilities with pagination
+- **Code Organization**: Improved helper function structure for better maintainability
 
-### System Monitoring API
+### Code Organization Improvements
+Recent improvements to the client management system include:
+- **Standalone Helper Functions**: Converted private methods to standalone functions for better testability
+  - `calculateAveragePaymentTime`: Now a standalone function for calculating payment metrics
+  - `logClientActivity`: Standalone function for activity logging with improved error handling
+- **Modular Architecture**: Clear separation of concerns with dedicated utility functions
+- **Enhanced Maintainability**: Functions can now be easily tested in isolation and reused across modules
+- **Type Safety**: Full TypeScript implementation with proper type definitions
 
-The System Monitoring API provides access to system health and performance metrics:
+These changes improve code maintainability, testability, and follow modern JavaScript/TypeScript best practices for function organization.
 
-#### Endpoints
+### Authentication System Implementation
+The backend now includes a comprehensive JWT-based authentication system with:
+- **AuthService**: Singleton service for token management and user verification
+- **Authentication Middleware**: `authenticateToken` for validating JWT access tokens
+- **Authorization Middleware**: `authorizeRoles` for role-based access control
+- **Resource Access Control**: `authorizeResourceAccess` for fine-grained permissions
+- **Token Management**: Dual-token system with automatic refresh capability
+- **User Model**: Complete user management with role-based permissions
 
-- `GET /api/monitoring/health` - Get current system health status
-- `GET /api/monitoring/performance` - Get performance statistics
-- `GET /api/monitoring/metrics` - Get system metrics history
+The frontend API service has been updated to handle automatic token refresh and authentication headers.
 
-#### Health Status Response
+## Contributing
 
-```typescript
-interface HealthResponse {
-  status: 'healthy' | 'warning' | 'critical';
-  metrics: {
-    timestamp: string;
-    cpu: {
-      usage: number;
-      loadAvg: number[];
-    };
-    memory: {
-      total: number;
-      free: number;
-      used: number;
-      usedPercent: number;
-    };
-    disk: {
-      total: number;
-      free: number;
-      used: number;
-      usedPercent: number;
-    };
-    uptime: number;
-    processMemory: {
-      rss: number;
-      heapTotal: number;
-      heapUsed: number;
-      external: number;
-    };
-  };
-}
-```
+This project follows the spec-driven development methodology. See the `.kiro/specs/` directory for detailed requirements, design, and implementation tasks.
 
-#### Performance Statistics
+## License
 
-```typescript
-interface PerformanceStats {
-  averages: Record<string, number>; // Average duration by operation
-  slowest: Array<{
-    timestamp: string;
-    apiEndpoint?: string;
-    operation?: string;
-    duration: number;
-    status?: number;
-    userAgent?: string;
-  }>;
-}
-```
-
-### GST Reporting API
-
-The GST Reporting API provides comprehensive tax compliance features for Indian businesses:
-
-#### Endpoints
-
-- `GET /api/gst/reports/gstr1` - Generate GSTR1 report (outward supplies)
-- `GET /api/gst/reports/gstr3b` - Generate GSTR3B report (monthly summary)
-- `POST /api/gst/export` - Export GST reports in various formats
-
-#### Report Filters
-
-```typescript
-interface GSTReportFilters {
-  startDate: string;
-  endDate: string;
-  gstType?: 'intra' | 'inter' | 'all'; // Intra-state or Inter-state
-  clientId?: string;
-  invoiceStatus?: string[];
-}
-```
-
-#### Export Options
-
-```typescript
-interface GSTExportRequest {
-  reportType: 'gstr1' | 'gstr2' | 'gstr3b' | 'gstr9';
-  format: 'json' | 'csv' | 'pdf' | 'excel';
-  filters: GSTReportFilters;
-}
-```
-
-#### GSTR1 Report Structure
-
-```typescript
-interface GSTR1ReportData {
-  b2b: B2BInvoice[]; // B2B invoices
-  b2c: B2CInvoice[]; // B2C invoices (large)
-  b2cs: B2CSInvoice[]; // B2C small invoices (aggregated)
-  hsn: HSNSummary[]; // HSN summary
-}
-```
-
-### File Management API
-
-The file management API provides comprehensive file storage and organization capabilities:
-
-#### Endpoints
-
-- `POST /api/files/upload` - Upload a new file
-- `GET /api/files/:id` - Get file metadata
-- `GET /api/files/download/:id` - Download a file
-- `DELETE /api/files/:id` - Delete a file
-- `PUT /api/files/:id` - Update file metadata
-- `GET /api/files/search` - Search files with advanced filtering
-- `POST /api/files/batch/tags` - Batch update file tags
-- `POST /api/files/batch/share` - Batch share files with clients
-
-#### File Search Options
-
-```typescript
-interface FileSearchRequest {
-  projectId?: string;
-  clientId?: string;
-  query?: string;
-  mimeType?: string;
-  tags?: string[];
-  uploadedBy?: string;
-  limit?: number;
-  offset?: number;
-  sortBy?: 'name' | 'size' | 'created_at' | 'updated_at';
-  sortDirection?: 'asc' | 'desc';
-  fullTextSearch?: boolean;
-  isSharedWithClient?: boolean;
-  dateRange?: {
-    start: string;
-    end: string;
-  };
-}
-```
-
-#### File Record Structure
-
-```typescript
-interface FileRecord {
-  id: string;
-  name: string;
-  original_name: string;
-  drive_file_id: string;
-  mime_type: string;
-  size: string;
-  project_id?: string;
-  client_id?: string;
-  uploaded_by: string;
-  description?: string;
-  tags?: string;
-  is_shared_with_client: boolean;
-  web_view_link: string;
-  web_content_link: string;
-  created_at: string;
-  updated_at: string;
-}
-```
-
-### Dashboard API
-
-The dashboard API provides comprehensive financial and project analytics:
-
-#### Endpoints
-
-- `GET /api/financial/dashboard` - Get dashboard metrics
-- `GET /api/financial/reports/{reportType}` - Generate financial reports
-- `POST /api/financial/export` - Export reports in various formats
-
-#### Dashboard Metrics
-
-```typescript
-interface DashboardMetrics {
-  totalRevenue: number;
-  totalExpenses: number;
-  netProfit: number;
-  profitMargin: number;
-  outstandingInvoices: number;
-  overdueInvoices: number;
-}
-```
-
-#### Report Types
-
-- `profit_loss` - Profit and loss statements
-- `expense_summary` - Expense breakdown by category
-- `revenue_summary` - Revenue analysis over time
-- `project_profitability` - Individual project profitability
-
-#### Export Formats
-
-- PDF - Professional formatted reports
-- CSV - Data for spreadsheet analysis
-- Excel - Advanced data manipulation
-
-#### Dashboard Data Structure
-
-```typescript
-interface DashboardData {
-  metrics: DashboardMetrics;
-  projectStats: ProjectStats;
-  recentActivity: RecentActivity[];
-  monthlyRevenue: Array<{ month: string; revenue: number; expenses: number }>;
-  expensesByCategory: Array<{ category: string; amount: number; percentage: number }>;
-  projectProfitability: Array<{
-    projectId: string;
-    projectName: string;
-    revenue: number;
-    expenses: number;
-    profit: number;
-    profitMargin: number;
-  }>;
-}
-```
-
-#### Report Filters
-
-```typescript
-interface ReportFilters {
-  startDate?: string;
-  endDate?: string;
-  projectId?: string;
-  clientId?: string;
-  period?: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom';
-}
-```
-
-### Client Portal API
-
-Secure client access to project information:
-
-- `POST /api/client-portal/generate-access` - Generate portal access token
-- `POST /api/client-portal/login` - Client portal authentication
-- `GET /api/client-portal/dashboard` - Client dashboard data
-- `GET /api/client-portal/projects` - Client's projects
-- `POST /api/client-portal/communications` - Send messages
-
-## Features Status
-
-### ✅ Completed Features
-- Backend API server with TypeScript and Express.js
-- React frontend with Material-UI and TypeScript
-- Google Sheets API integration and data models
-- Authentication and security middleware
-- Project and task management
-- Client management with portal access
-- Invoice generation and management
-- Payment processing integration
-- Financial dashboard and reporting
-- Enhanced connectivity monitoring with offline support
-- Progressive Web App (PWA) foundation
-- Comprehensive test coverage
-- System integration testing and validation
-- GST compliance and e-invoicing
-- User documentation and help guides
-
-### 🚧 In Progress
-- File management and document sharing
-  - Enhanced file search capabilities with full-text search
-  - Improved file organization and metadata management
-- Mobile responsiveness optimization
-- Advanced automation workflows
-
-### ✅ Recently Completed
-- Comprehensive System Integration Testing
-  - End-to-end workflow validation
-  - Requirements verification against implementation
-  - Data integrity validation across Google Sheets
-  - GST compliance testing for Indian regulations
-  - User acceptance testing documentation
-- User Documentation
-  - Complete user guide with feature walkthroughs
-  - Administrator documentation
-  - API documentation for integrations
-- Advanced GST compliance features
-  - GSTR1 report generation for outward supplies
-  - GSTR3B monthly summary reporting
-  - B2B and B2C invoice categorization
-  - Inter-state vs intra-state transaction detection
-  - HSN code support for product/service categorization
-  - Multiple export formats (PDF, CSV, JSON, Excel)
-- Comprehensive System Monitoring
-  - Real-time performance tracking and metrics collection
-  - Automated error detection and alerting
-  - System health monitoring (CPU, memory, disk usage)
-  - API response time tracking and slow operation detection
-
-### 📋 Planned Features
-- QuickBooks/Xero integration
-- Complete offline functionality with local storage
-- API rate limiting and caching
-- Push notifications for important updates
-
-Ready for production deployment with comprehensive project and invoice management capabilities.
+MIT License

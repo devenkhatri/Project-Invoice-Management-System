@@ -1,0 +1,930 @@
+openapi: 3.0.3
+info:
+  title: Project Invoice Management - Integrations API
+  description: Advanced automation and integration endpoints for GST compliance, e-invoicing, workflows, and third-party integrations
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@projectinvoice.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3001/api/integrations
+    description: Development server
+  - url: https://api.projectinvoice.com/integrations
+    description: Production server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # GST Reports
+  /gst/gstr1/{month}/{year}:
+    get:
+      tags:
+        - GST Reports
+      summary: Generate GSTR1 report
+      description: Generate GSTR1 report for outward supplies with B2B/B2C categorization
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+          example: 1
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 2020
+          example: 2024
+      responses:
+        '200':
+          description: GSTR1 report generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GSTR1Record'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /gst/gstr3b/{month}/{year}:
+    get:
+      tags:
+        - GST Reports
+      summary: Generate GSTR3B report
+      description: Generate GSTR3B monthly summary reporting with tax liability calculations
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 2020
+      responses:
+        '200':
+          description: GSTR3B report generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GSTR3BData'
+
+  /gst/gstr1/{month}/{year}/export:
+    get:
+      tags:
+        - GST Reports
+      summary: Export GSTR1 report as JSON
+      description: Export GSTR1 report in JSON format for filing
+      parameters:
+        - name: month
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: GSTR1 report exported successfully
+          content:
+            application/json:
+              schema:
+                type: string
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              example: attachment; filename=GSTR1_1_2024.json
+
+  # E-Invoice
+  /e-invoice/generate/{invoiceId}:
+    post:
+      tags:
+        - E-Invoice
+      summary: Generate e-invoice
+      description: Generate e-invoice as per Indian government specifications with IRN
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: inv_123
+      responses:
+        '200':
+          description: E-invoice generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/EInvoiceResponse'
+
+  /e-invoice/qr/{invoiceId}:
+    get:
+      tags:
+        - E-Invoice
+      summary: Generate QR code for invoice
+      description: Generate QR code for invoice verification as per GSTN specifications
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: QR code generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      qrCode:
+                        type: string
+                        description: Base64 encoded QR code image
+
+  /e-invoice/cancel/{invoiceId}:
+    post:
+      tags:
+        - E-Invoice
+      summary: Cancel e-invoice
+      description: Cancel e-invoice with GSTN
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Reason for cancellation
+                  example: Duplicate invoice
+              required:
+                - reason
+      responses:
+        '200':
+          description: E-invoice cancelled successfully
+
+  # Workflow Engine
+  /workflows/rules:
+    get:
+      tags:
+        - Workflow Engine
+      summary: Get workflow rules
+      description: Retrieve all workflow automation rules
+      responses:
+        '200':
+          description: Workflow rules retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/WorkflowRule'
+
+    post:
+      tags:
+        - Workflow Engine
+      summary: Create workflow rule
+      description: Create a new workflow automation rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkflowRule'
+      responses:
+        '200':
+          description: Workflow rule created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      ruleId:
+                        type: string
+
+  /workflows/rules/{ruleId}:
+    put:
+      tags:
+        - Workflow Engine
+      summary: Update workflow rule
+      description: Update an existing workflow rule
+      parameters:
+        - name: ruleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWorkflowRule'
+      responses:
+        '200':
+          description: Workflow rule updated successfully
+
+    delete:
+      tags:
+        - Workflow Engine
+      summary: Delete workflow rule
+      description: Delete a workflow rule
+      parameters:
+        - name: ruleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Workflow rule deleted successfully
+
+  /workflows/trigger:
+    post:
+      tags:
+        - Workflow Engine
+      summary: Trigger workflow
+      description: Manually trigger workflow execution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                triggerType:
+                  type: string
+                  example: invoice_created
+                entityType:
+                  type: string
+                  example: invoice
+                data:
+                  type: object
+                  example: { "id": "inv_123", "amount": 1000 }
+              required:
+                - triggerType
+                - entityType
+                - data
+      responses:
+        '200':
+          description: Workflow triggered successfully
+
+  /workflows/metrics:
+    get:
+      tags:
+        - Workflow Engine
+      summary: Get workflow metrics
+      description: Retrieve workflow execution metrics and performance data
+      responses:
+        '200':
+          description: Workflow metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/WorkflowMetrics'
+
+  # Webhooks
+  /webhooks/register:
+    post:
+      tags:
+        - Webhooks
+      summary: Register webhook
+      description: Register a new webhook endpoint for real-time notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  example: https://example.com/webhook
+                events:
+                  type: array
+                  items:
+                    type: string
+                  example: ["invoice.created", "invoice.paid"]
+                secret:
+                  type: string
+                  description: Optional webhook secret for signature verification
+              required:
+                - url
+                - events
+      responses:
+        '200':
+          description: Webhook registered successfully
+
+  /webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: Get webhooks
+      description: Retrieve all registered webhooks
+      responses:
+        '200':
+          description: Webhooks retrieved successfully
+
+  /webhooks/{webhookId}:
+    put:
+      tags:
+        - Webhooks
+      summary: Update webhook
+      description: Update webhook configuration
+      parameters:
+        - name: webhookId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Webhook updated successfully
+
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete webhook
+      description: Delete a webhook endpoint
+      parameters:
+        - name: webhookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Webhook deleted successfully
+
+  # API Keys
+  /api-keys:
+    post:
+      tags:
+        - API Keys
+      summary: Create API key
+      description: Create a new API key for third-party access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Integration API Key
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                  example: ["read:invoices", "write:invoices"]
+                expiresAt:
+                  type: string
+                  format: date-time
+                  example: 2024-12-31T23:59:59Z
+              required:
+                - name
+                - permissions
+      responses:
+        '200':
+          description: API key created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      keyId:
+                        type: string
+                      apiKey:
+                        type: string
+                        description: The actual API key (only shown once)
+
+    get:
+      tags:
+        - API Keys
+      summary: Get API keys
+      description: Retrieve all API keys (keys are masked for security)
+      responses:
+        '200':
+          description: API keys retrieved successfully
+
+  /api-keys/{keyId}:
+    delete:
+      tags:
+        - API Keys
+      summary: Delete API key
+      description: Delete an API key
+      parameters:
+        - name: keyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: API key deleted successfully
+
+  # Third-party Integrations
+  /integrations/quickbooks/sync:
+    post:
+      tags:
+        - Third-party Integrations
+      summary: Sync with QuickBooks
+      description: Synchronize invoices with QuickBooks Online
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  description: QuickBooks OAuth access token
+                companyId:
+                  type: string
+                  description: QuickBooks company ID
+              required:
+                - accessToken
+                - companyId
+      responses:
+        '200':
+          description: QuickBooks sync completed successfully
+
+  /integrations/xero/sync:
+    post:
+      tags:
+        - Third-party Integrations
+      summary: Sync with Xero
+      description: Synchronize invoices with Xero accounting software
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  description: Xero OAuth access token
+                tenantId:
+                  type: string
+                  description: Xero tenant ID
+              required:
+                - accessToken
+                - tenantId
+      responses:
+        '200':
+          description: Xero sync completed successfully
+
+  # Compliance and Audit
+  /compliance/audit-trail:
+    get:
+      tags:
+        - Compliance
+      summary: Get audit trail
+      description: Retrieve audit trail for compliance monitoring
+      parameters:
+        - name: entityType
+          in: query
+          schema:
+            type: string
+          description: Filter by entity type
+        - name: entityId
+          in: query
+          schema:
+            type: string
+          description: Filter by entity ID
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter from start date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Filter to end date
+      responses:
+        '200':
+          description: Audit trail retrieved successfully
+
+  /compliance/data-retention:
+    get:
+      tags:
+        - Compliance
+      summary: Get data retention policies
+      description: Retrieve data retention policies for compliance
+      responses:
+        '200':
+          description: Data retention policies retrieved successfully
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    GSTR1Record:
+      type: object
+      properties:
+        gstin:
+          type: string
+          example: "27ABCDE1234F1Z5"
+        invoiceNumber:
+          type: string
+          example: "INV-001"
+        invoiceDate:
+          type: string
+          format: date
+          example: "2024-01-15"
+        invoiceValue:
+          type: number
+          example: 11800
+        placeOfSupply:
+          type: string
+          example: "27"
+        reverseCharge:
+          type: boolean
+          example: false
+        invoiceType:
+          type: string
+          enum: ["B2B", "B2C"]
+          example: "B2B"
+        rate:
+          type: number
+          example: 18
+        taxableValue:
+          type: number
+          example: 10000
+        integratedTax:
+          type: number
+          example: 0
+        centralTax:
+          type: number
+          example: 900
+        stateTax:
+          type: number
+          example: 900
+        cessAmount:
+          type: number
+          example: 0
+        hsnCode:
+          type: string
+          example: "998314"
+
+    GSTR3BData:
+      type: object
+      properties:
+        outwardSupplies:
+          type: object
+          properties:
+            taxableSupplies:
+              type: number
+            exemptSupplies:
+              type: number
+            nilRatedSupplies:
+              type: number
+        inwardSupplies:
+          type: object
+          properties:
+            reverseChargeSupplies:
+              type: number
+            importOfGoods:
+              type: number
+            importOfServices:
+              type: number
+        taxLiability:
+          type: object
+          properties:
+            integratedTax:
+              type: number
+            centralTax:
+              type: number
+            stateTax:
+              type: number
+            cessAmount:
+              type: number
+        taxPaid:
+          type: object
+          properties:
+            integratedTax:
+              type: number
+            centralTax:
+              type: number
+            stateTax:
+              type: number
+            cessAmount:
+              type: number
+
+    EInvoiceResponse:
+      type: object
+      properties:
+        irn:
+          type: string
+          description: Invoice Reference Number
+          example: "IRN123456789"
+        ackNo:
+          type: string
+          description: Acknowledgment Number
+          example: "ACK123"
+        ackDt:
+          type: string
+          format: date-time
+          description: Acknowledgment Date
+          example: "2024-01-15T10:30:00Z"
+        signedInvoice:
+          type: string
+          description: Digitally signed invoice data
+        signedQRCode:
+          type: string
+          description: Signed QR code data
+        status:
+          type: string
+          example: "success"
+        ewbNo:
+          type: string
+          description: E-way bill number (if applicable)
+        ewbDt:
+          type: string
+          format: date-time
+          description: E-way bill date
+        ewbValidTill:
+          type: string
+          format: date-time
+          description: E-way bill validity
+
+    WorkflowRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: "Payment Reminder"
+        description:
+          type: string
+          example: "Send reminder when invoice is overdue"
+        trigger:
+          $ref: '#/components/schemas/WorkflowTrigger'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowCondition'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+        enabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    WorkflowTrigger:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["invoice_created", "invoice_paid", "project_completed", "task_completed", "payment_overdue", "client_created", "time_entry_added"]
+        entityType:
+          type: string
+          enum: ["invoice", "project", "task", "client", "payment", "time_entry"]
+        event:
+          type: string
+
+    WorkflowCondition:
+      type: object
+      properties:
+        field:
+          type: string
+        operator:
+          type: string
+          enum: ["equals", "not_equals", "greater_than", "less_than", "contains", "not_contains", "is_empty", "is_not_empty"]
+        value:
+          oneOf:
+            - type: string
+            - type: number
+            - type: boolean
+        logicalOperator:
+          type: string
+          enum: ["AND", "OR"]
+
+    WorkflowAction:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["send_email", "send_sms", "create_task", "update_status", "create_invoice", "send_webhook", "create_reminder", "update_field"]
+        parameters:
+          type: object
+          additionalProperties: true
+
+    CreateWorkflowRule:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        trigger:
+          $ref: '#/components/schemas/WorkflowTrigger'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowCondition'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+        enabled:
+          type: boolean
+      required:
+        - name
+        - trigger
+        - actions
+
+    UpdateWorkflowRule:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        trigger:
+          $ref: '#/components/schemas/WorkflowTrigger'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowCondition'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowAction'
+        enabled:
+          type: boolean
+
+    WorkflowMetrics:
+      type: object
+      properties:
+        totalExecutions:
+          type: integer
+        successfulExecutions:
+          type: integer
+        failedExecutions:
+          type: integer
+        averageExecutionTime:
+          type: number
+          description: Average execution time in milliseconds
+        executionsByRule:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              total:
+                type: integer
+              successful:
+                type: integer
+              failed:
+                type: integer
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Unauthorized"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Internal server error"
+
+tags:
+  - name: GST Reports
+    description: Indian GST compliance reporting
+  - name: E-Invoice
+    description: E-invoicing for Indian compliance
+  - name: Workflow Engine
+    description: Automation workflow management
+  - name: Webhooks
+    description: Real-time event notifications
+  - name: API Keys
+    description: API key management for third-party access
+  - name: Third-party Integrations
+    description: Integration with external accounting software
+  - name: Compliance
+    description: Compliance monitoring and audit trails

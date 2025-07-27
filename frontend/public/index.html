@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    
+    <!-- Mobile-optimized viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- PWA Theme -->
+    <meta name="theme-color" content="#1976d2" />
+    <meta name="msapplication-TileColor" content="#1976d2" />
+    
+    <!-- App Description -->
+    <meta name="description" content="Project Invoice Management System for Solopreneurs - Manage projects, track time, generate invoices, and handle client communications efficiently." />
+    <meta name="keywords" content="project management, invoice, solopreneur, freelancer, time tracking, client management" />
+    
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon.ico" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Project Invoice" />
+    
+    <!-- Android PWA Support -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Project Invoice" />
+    
+    <!-- Windows PWA Support -->
+    <meta name="msapplication-starturl" content="/" />
+    <meta name="msapplication-config" content="%PUBLIC_URL%/browserconfig.xml" />
+    
+    <!-- Prevent zoom on input focus (iOS) -->
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Security headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <title>Project Invoice Manager</title>
+  </head>
+  <body>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>JavaScript Required</h1>
+        <p>You need to enable JavaScript to run this app.</p>
+        <p>This is a modern web application that requires JavaScript to function properly.</p>
+      </div>
+    </noscript>
+    <div id="root"></div>
+    
+    <!-- PWA Installation Script -->
+    <script>
+      // Handle PWA installation prompt
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+      });
+      
+      // Handle app installation
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        deferredPrompt = null;
+      });
+      
+      // Handle online/offline status
+      window.addEventListener('online', () => {
+        console.log('App is online');
+        document.body.classList.remove('offline');
+      });
+      
+      window.addEventListener('offline', () => {
+        console.log('App is offline');
+        document.body.classList.add('offline');
+      });
+    </script>
+    
+    <!-- Offline indicator styles -->
+    <style>
+      .offline::before {
+        content: 'You are currently offline. Some features may be limited.';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #f44336;
+        color: white;
+        text-align: center;
+        padding: 8px;
+        z-index: 9999;
+        font-size: 14px;
+      }
+    </style>
+  </body>
+</html>

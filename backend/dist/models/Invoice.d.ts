@@ -1,0 +1,71 @@
+import { Invoice as IInvoice, InvoiceLineItem, TaxBreakdown, InvoiceStatus, PaymentStatus } from '../types';
+export declare class Invoice implements IInvoice {
+    id: string;
+    invoice_number: string;
+    client_id: string;
+    project_id?: string;
+    line_items: InvoiceLineItem[];
+    subtotal: number;
+    tax_breakdown: TaxBreakdown;
+    total_amount: number;
+    currency: string;
+    status: InvoiceStatus;
+    issue_date: string;
+    due_date: string;
+    payment_terms: string;
+    notes?: string;
+    terms_conditions?: string;
+    is_recurring: boolean;
+    recurring_frequency?: string;
+    next_invoice_date?: string;
+    payment_status: PaymentStatus;
+    paid_amount: number;
+    payment_date?: string;
+    payment_method?: string;
+    late_fee_applied?: number;
+    discount_percentage?: number;
+    discount_amount?: number;
+    created_at: string;
+    updated_at?: string;
+    constructor(data: Partial<IInvoice>);
+    calculateSubtotal(): number;
+    calculateTaxBreakdown(client: any, supplierStateCode?: string): TaxBreakdown;
+    calculateTotalAmount(): number;
+    recalculateAmounts(client: any, supplierStateCode?: string): void;
+    addLineItem(item: Omit<InvoiceLineItem, 'id'>): void;
+    removeLineItem(itemId: string): void;
+    updateLineItem(itemId: string, updates: Partial<InvoiceLineItem>): void;
+    recordPayment(amount: number, paymentDate: string, paymentMethod?: string): void;
+    getRemainingAmount(): number;
+    isFullyPaid(): boolean;
+    isPartiallyPaid(): boolean;
+    isOverdue(): boolean;
+    getDaysOverdue(): number;
+    getDaysUntilDue(): number;
+    calculateLateFee(lateFeeRate?: number, maxLateFee?: number): number;
+    applyLateFee(lateFeeRate?: number, maxLateFee?: number): void;
+    markAsSent(): void;
+    markAsOverdue(): void;
+    cancel(): void;
+    generateNextInvoice(): Partial<IInvoice> | null;
+    private calculateNextInvoiceDate;
+    private calculateDueDateFromIssueDate;
+    private getPaymentTermsDays;
+    private generateLineItemId;
+    static validate(data: Partial<IInvoice>): {
+        isValid: boolean;
+        errors: {
+            field: string;
+            message: string;
+            value: any;
+        }[];
+        data: null;
+    } | {
+        isValid: boolean;
+        errors: never[];
+        data: any;
+    };
+    toJSON(): IInvoice;
+    static fromJSON(data: any): Invoice;
+}
+//# sourceMappingURL=Invoice.d.ts.map

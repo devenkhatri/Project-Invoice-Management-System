@@ -1,0 +1,142 @@
+config:
+  target: 'http://localhost:3001'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 10
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+  payload:
+    path: "./test-data.csv"
+    fields:
+      - "email"
+      - "password"
+      - "projectName"
+      - "clientName"
+
+scenarios:
+  - name: "Authentication Flow"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/auth/profile"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  - name: "Project Management Operations"
+    weight: 25
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/projects"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      - post:
+          url: "/api/projects"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            name: "{{ projectName }}"
+            description: "Load test project"
+            status: "active"
+          capture:
+            - json: "$.id"
+              as: "projectId"
+      - get:
+          url: "/api/projects/{{ projectId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  - name: "Google Sheets Operations"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/projects"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      - post:
+          url: "/api/projects/{{ projectId }}/tasks"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            title: "Load test task"
+            description: "Performance testing task"
+            priority: "medium"
+
+  - name: "Invoice Generation"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - post:
+          url: "/api/invoices"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            clientId: "test-client-id"
+            projectId: "{{ projectId }}"
+            amount: 5000
+            dueDate: "2024-02-28"
+          capture:
+            - json: "$.id"
+              as: "invoiceId"
+      - get:
+          url: "/api/invoices/{{ invoiceId }}/pdf"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+
+  - name: "Dashboard Analytics"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+      - get:
+          url: "/api/reports/dashboard"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+      - get:
+          url: "/api/reports/financial"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          qs:
+            startDate: "2024-01-01"
+            endDate: "2024-01-31"
