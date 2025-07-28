@@ -36,47 +36,146 @@ A comprehensive project and invoice management system for solopreneurs, built wi
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-- Google Cloud Platform account for Sheets API
 
-### Installation
+- Node.js 18 or higher
+- npm or yarn package manager
+- Google Cloud Platform account
+- Google Sheets API access
+- Payment gateway accounts (Stripe, PayPal, Razorpay)
+- Email service (Gmail, SendGrid, or Mailgun)
 
-1. Clone the repository
-2. Install backend dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
+### Quick Setup
 
-3. Install frontend dependencies:
-   ```bash
-   cd frontend
-   npm install
-   ```
+We provide automated setup scripts to get you started quickly:
 
-4. Set up environment variables:
-   - Copy `backend/.env.example` to `backend/.env`
-   - Copy `frontend/.env.example` to `frontend/.env`
-   - Fill in the required values
+#### For macOS/Linux:
+```bash
+git clone <repository-url>
+cd project-invoice-management
+chmod +x setup.sh
+./setup.sh
+```
+
+#### For Windows:
+```bash
+git clone <repository-url>
+cd project-invoice-management
+setup.bat
+```
+
+### Manual Installation
+
+1. **Clone the repository:**
+```bash
+git clone <repository-url>
+cd project-invoice-management
+```
+
+2. **Install dependencies:**
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd ../frontend
+npm install
+
+# Documentation (optional)
+cd ../docs
+npm install
+```
+
+3. **Set up environment variables:**
+```bash
+# Backend
+cd backend
+cp .env.example .env
+# Edit .env with your configuration
+
+# Frontend
+cd ../frontend
+cp .env.example .env
+# Edit .env with your configuration
+```
+
+4. **Configure Google Sheets API:**
+   - Create a Google Cloud Project
+   - Enable Google Sheets API and Google Drive API
+   - Create a service account and download JSON key
+   - Create a Google Sheets spreadsheet
+   - Share spreadsheet with service account email
+   - Update environment variables with credentials
+
+5. **Initialize Google Sheets structure:**
+```bash
+cd backend
+npm run init-sheets
+```
+
+6. **Start the development servers:**
+```bash
+# Backend (terminal 1)
+cd backend
+npm run dev
+
+# Frontend (terminal 2)
+cd frontend
+npm start
+
+# Documentation (terminal 3, optional)
+cd docs
+npm start
+```
+
+### Environment Configuration
+
+For detailed environment setup instructions, see:
+- **[Environment Setup Guide](ENVIRONMENT_SETUP_GUIDE.md)** - Complete configuration guide
+- **[Backend .env.example](backend/.env.example)** - Backend environment template
+- **[Frontend .env.example](frontend/.env.example)** - Frontend environment template
+
+### Required Services Setup
+
+#### 1. Google Sheets API
+- **Purpose**: Primary data storage backend
+- **Setup**: [Google Cloud Console](https://console.cloud.google.com/)
+- **Required**: Service account with Sheets and Drive API access
+
+#### 2. Payment Gateways
+- **Stripe**: [Dashboard](https://dashboard.stripe.com/) - International payments
+- **PayPal**: [Developer Portal](https://developer.paypal.com/) - Global payments
+- **Razorpay**: [Dashboard](https://dashboard.razorpay.com/) - Indian payments
+
+#### 3. Email Service
+- **Gmail**: App passwords for SMTP
+- **SendGrid**: API key for transactional emails
+- **Mailgun**: Domain and API key setup
+
+#### 4. GST Compliance (India)
+- **GST API**: Government or third-party GST service provider
+- **E-Invoice**: GST Suvidha Provider (GSP) credentials
+
+### Verification
+
+After setup, verify your installation:
+
+```bash
+# Test backend API
+curl http://localhost:5000/api/health
+
+# Test frontend
+open http://localhost:3000
+
+# Run test suites
+cd backend && npm test
+cd frontend && npm test
+```
 
 ### Development
 
-1. Start the backend server:
-   ```bash
-   cd backend
-   npm run dev
-   ```
-
-2. Start the frontend development server:
-   ```bash
-   cd frontend
-   npm start
-   ```
-
-3. Open http://localhost:3000 in your browser
-
-The backend server will run on http://localhost:3001 by default.
+The backend server will run on http://localhost:5000 by default.
+The frontend will be available at http://localhost:3000.
 
 ### Building for Production
 
