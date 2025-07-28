@@ -349,3 +349,5 @@ webpack-bundle-analyzer-report.html
 # Turborepo
 .turbo
 backend/.env
+backend/.env
+frontend/.env

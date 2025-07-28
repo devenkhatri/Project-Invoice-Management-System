@@ -10,14 +10,17 @@ This guide helps you resolve common issues when starting the Project Invoice Man
 
 **Solution**:
 ```bash
-# Step 1: Set up your Google Sheets first
+# Step 1: Test your environment configuration
 cd backend
+npm run test-env
+
+# Step 2: Set up your Google Sheets
 npm run setup-sheets:full
 
-# Step 2: Verify the setup
+# Step 3: Verify the setup
 npm run setup-sheets:validate
 
-# Step 3: Start the server
+# Step 4: Start the server
 npm run dev:clean
 ```
 
@@ -139,10 +142,14 @@ GOOGLE_SHEETS_ID=your-spreadsheet-id-here
 GOOGLE_SERVICE_ACCOUNT_KEY={"type":"service_account",...}
 ```
 
-### Step 4: Initialize Google Sheets
+### Step 4: Test and Initialize Google Sheets
 ```bash
-# Setup all required sheets and headers
 cd backend
+
+# Test your environment configuration
+npm run test-env
+
+# Setup all required sheets and headers
 npm run setup-sheets:full
 
 # Verify the setup

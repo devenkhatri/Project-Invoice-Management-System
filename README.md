@@ -179,8 +179,9 @@ cd frontend && npm test
 **"Unknown sheet: Automation_Rules" error:**
 ```bash
 cd backend
-npm run setup-sheets:full
-npm run dev:clean
+npm run test-env          # Test environment setup
+npm run setup-sheets:full # Create all required sheets
+npm run dev:clean         # Start server cleanly
 ```
 
 **"Port 5000 already in use" error:**

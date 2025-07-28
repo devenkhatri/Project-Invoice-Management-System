@@ -1,27 +1,21 @@
 #!/usr/bin/env node
 
 /**
- * Google Sheets Setup Script
+ * Google Sheets Setup Script (JavaScript version)
  * 
  * This script creates and initializes all required Google Sheets for the
  * Project Invoice Management System with proper headers and structure.
  */
 
-import * as dotenv from 'dotenv';
-import { google } from 'googleapis';
-import { JWT } from 'google-auth-library';
+const dotenv = require('dotenv');
+const { google } = require('googleapis');
+const { JWT } = require('google-auth-library');
 
 // Load environment variables
 dotenv.config();
 
-interface SheetConfig {
-  name: string;
-  headers: string[];
-  description?: string;
-}
-
 // Complete sheet configurations for the Project Invoice Management System
-const SHEET_CONFIGURATIONS: SheetConfig[] = [
+const SHEET_CONFIGURATIONS = [
   // Core Business Entities
   {
     name: 'Projects',
@@ -219,21 +213,12 @@ const SHEET_CONFIGURATIONS: SheetConfig[] = [
 ];
 
 class GoogleSheetsSetup {
-  private auth: JWT;
-  private sheets: any;
-  private spreadsheetId: string;
-
   constructor() {
-    // Initialize with temporary values, will be set in methods
-    this.auth = {} as JWT;
-    this.sheets = {};
-    this.spreadsheetId = '';
-    
     this.validateEnvironment();
     this.initializeAuth();
   }
 
-  private validateEnvironment(): void {
+  validateEnvironment() {
     const requiredVars = [
       'GOOGLE_SHEETS_ID',
       'GOOGLE_SERVICE_ACCOUNT_KEY'
@@ -248,12 +233,12 @@ class GoogleSheetsSetup {
       process.exit(1);
     }
 
-    this.spreadsheetId = process.env.GOOGLE_SHEETS_ID!;
+    this.spreadsheetId = process.env.GOOGLE_SHEETS_ID;
   }
 
-  private initializeAuth(): void {
+  initializeAuth() {
     try {
-      const serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY!);
+      const serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
       
       this.auth = new JWT({
         email: serviceAccountKey.client_email,
@@ -272,7 +257,7 @@ class GoogleSheetsSetup {
     }
   }
 
-  async createSpreadsheet(): Promise<string> {
+  async createSpreadsheet() {
     try {
       console.log('🆕 Creating new Google Spreadsheet...');
       
@@ -297,7 +282,7 @@ class GoogleSheetsSetup {
     }
   }
 
-  async setupSheets(): Promise<void> {
+  async setupSheets() {
     try {
       console.log('🚀 Starting Google Sheets setup...');
       console.log(`📊 Spreadsheet ID: ${this.spreadsheetId}`);
@@ -310,7 +295,7 @@ class GoogleSheetsSetup {
       console.log(`📋 Spreadsheet: ${spreadsheet.data.properties?.title}`);
 
       // Get existing sheets
-      const existingSheets = spreadsheet.data.sheets?.map((sheet: any) => ({
+      const existingSheets = spreadsheet.data.sheets?.map(sheet => ({
         id: sheet.properties?.sheetId,
         title: sheet.properties?.title
       })) || [];
@@ -319,7 +304,7 @@ class GoogleSheetsSetup {
 
       // Create missing sheets
       const sheetsToCreate = SHEET_CONFIGURATIONS.filter(
-        config => !existingSheets.some((existing: any) => existing.title === config.name)
+        config => !existingSheets.some(existing => existing.title === config.name)
       );
 
       if (sheetsToCreate.length > 0) {
@@ -346,7 +331,7 @@ class GoogleSheetsSetup {
     }
   }
 
-  private async createSheets(sheetsToCreate: SheetConfig[]): Promise<void> {
+  async createSheets(sheetsToCreate) {
     const requests = sheetsToCreate.map(config => ({
       addSheet: {
         properties: {
@@ -365,7 +350,7 @@ class GoogleSheetsSetup {
     });
 
     const defaultSheet = spreadsheet.data.sheets?.find(
-      (sheet: any) => sheet.properties?.title === 'Sheet1'
+      sheet => sheet.properties?.title === 'Sheet1'
     );
 
     if (defaultSheet && sheetsToCreate.length > 0) {
@@ -373,7 +358,7 @@ class GoogleSheetsSetup {
         deleteSheet: {
           sheetId: defaultSheet.properties?.sheetId
         }
-      } as any);
+      });
     }
 
     if (requests.length > 0) {
@@ -386,8 +371,8 @@ class GoogleSheetsSetup {
     }
   }
 
-  private async setupHeaders(): Promise<void> {
-    const requests: any[] = [];
+  async setupHeaders() {
+    const requests = [];
 
     for (const config of SHEET_CONFIGURATIONS) {
       // Add headers
@@ -436,8 +421,8 @@ class GoogleSheetsSetup {
     }
   }
 
-  private async applyFormatting(): Promise<void> {
-    const requests: any[] = [];
+  async applyFormatting() {
+    const requests = [];
 
     for (const config of SHEET_CONFIGURATIONS) {
       const sheetId = await this.getSheetId(config.name);
@@ -482,13 +467,13 @@ class GoogleSheetsSetup {
     }
   }
 
-  private async getSheetId(sheetName: string): Promise<number> {
+  async getSheetId(sheetName) {
     const spreadsheet = await this.sheets.spreadsheets.get({
       spreadsheetId: this.spreadsheetId
     });
 
     const sheet = spreadsheet.data.sheets?.find(
-      (s: any) => s.properties?.title === sheetName
+      s => s.properties?.title === sheetName
     );
 
     if (!sheet) {
@@ -498,7 +483,7 @@ class GoogleSheetsSetup {
     return sheet.properties?.sheetId;
   }
 
-  async validateSetup(): Promise<void> {
+  async validateSetup() {
     try {
       console.log('🔍 Validating setup...');
 
@@ -507,7 +492,7 @@ class GoogleSheetsSetup {
       });
 
       const existingSheets = spreadsheet.data.sheets?.map(
-        (sheet: any) => sheet.properties?.title
+        sheet => sheet.properties?.title
       ) || [];
 
       const missingSheets = SHEET_CONFIGURATIONS.filter(
@@ -546,56 +531,6 @@ class GoogleSheetsSetup {
       throw error;
     }
   }
-
-  async addSampleData(): Promise<void> {
-    try {
-      console.log('🌱 Adding sample data...');
-
-      // Sample clients
-      const sampleClients = [
-        {
-          id: 'client_1',
-          name: 'Tech Solutions Pvt Ltd',
-          email: 'contact@techsolutions.com',
-          phone: '+91-9876543210',
-          address: '123 Business Park',
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          country: 'India',
-          postal_code: '400001',
-          gstin: '27ABCDE1234F1Z5',
-          pan: 'ABCDE1234F',
-          payment_terms: 'Net 30',
-          default_currency: 'INR',
-          billing_address: '123 Business Park, Mumbai, Maharashtra 400001',
-          shipping_address: '123 Business Park, Mumbai, Maharashtra 400001',
-          contact_person: 'John Doe',
-          website: 'https://techsolutions.com',
-          notes: 'Premium client with multiple projects',
-          is_active: 'true',
-          portal_access_enabled: 'true',
-          company_name: 'Tech Solutions Pvt Ltd',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
-
-      await this.sheets.spreadsheets.values.append({
-        spreadsheetId: this.spreadsheetId,
-        range: 'Clients!A:A',
-        valueInputOption: 'RAW',
-        resource: {
-          values: sampleClients.map(client => Object.values(client))
-        }
-      });
-
-      console.log('✅ Sample data added successfully');
-
-    } catch (error) {
-      console.error('❌ Failed to add sample data:', error);
-      throw error;
-    }
-  }
 }
 
 // Command line interface
@@ -619,11 +554,6 @@ async function main() {
         await setup.validateSetup();
         break;
 
-      case 'sample':
-        await setup.setupSheets();
-        await setup.addSampleData();
-        break;
-
       case 'full':
         await setup.setupSheets();
         await setup.validateSetup();
@@ -634,19 +564,18 @@ async function main() {
         console.log(`
 🚀 Google Sheets Setup Tool
 
-Usage: npm run setup-sheets <command>
+Usage: node setup-sheets.js <command>
 
 Commands:
   create    Create a new Google Spreadsheet
   setup     Setup all required sheets and headers
   validate  Validate existing sheet structure
-  sample    Setup sheets and add sample data
   full      Complete setup with validation
 
 Examples:
-  npm run setup-sheets create
-  npm run setup-sheets setup
-  npm run setup-sheets full
+  node setup-sheets.js create
+  node setup-sheets.js setup
+  node setup-sheets.js full
 
 Environment Variables Required:
   GOOGLE_SHEETS_ID              - Your Google Sheets spreadsheet ID
@@ -667,4 +596,4 @@ if (require.main === module) {
   main();
 }
 
-export { GoogleSheetsSetup, SHEET_CONFIGURATIONS };
+module.exports = { GoogleSheetsSetup, SHEET_CONFIGURATIONS };
