@@ -77,6 +77,8 @@ jspm_packages/
 .env.test.local
 .env.production.local
 .env.local
+frontend/.env
+backend/.env
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -346,3 +348,4 @@ webpack-bundle-analyzer-report.html
 
 # Turborepo
 .turbo
+backend/.env
