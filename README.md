@@ -172,6 +172,30 @@ cd backend && npm test
 cd frontend && npm test
 ```
 
+## 🚨 Common Issues & Quick Fixes
+
+### Backend Won't Start?
+
+**"Unknown sheet: Automation_Rules" error:**
+```bash
+cd backend
+npm run setup-sheets:full
+npm run dev:clean
+```
+
+**"Port 5000 already in use" error:**
+```bash
+cd backend
+npm run kill-port
+npm run dev
+```
+
+### Need Help?
+
+- 🚀 **Quick fixes**: [QUICK_START_TROUBLESHOOTING.md](QUICK_START_TROUBLESHOOTING.md)
+- 📚 **Detailed setup**: [ENVIRONMENT_SETUP_GUIDE.md](ENVIRONMENT_SETUP_GUIDE.md)  
+- 🔧 **Full troubleshooting**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
 ### Development
 
 The backend server will run on http://localhost:5000 by default.

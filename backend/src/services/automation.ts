@@ -140,19 +140,23 @@ export class AutomationService extends EventEmitter {
         }
       ];
 
-      // Initialize sheets if they don't exist
+      // Check if sheets exist, but don't fail if they don't
       for (const sheet of automationSheets) {
         try {
           await this.sheetsService.read(sheet.name);
         } catch (error) {
-          console.log(`Creating automation sheet: ${sheet.name}`);
-          // Sheet doesn't exist, it will be created when first used
+          console.log(`Automation sheet '${sheet.name}' not found, it will be created when sheets are initialized`);
+          // Don't fail here, just log that the sheet doesn't exist
         }
       }
 
-      // Initialize default templates and rules
-      await this.initializeDefaultTemplates();
-      await this.initializeDefaultRules();
+      // Initialize default templates and rules only if sheets exist
+      try {
+        await this.initializeDefaultTemplates();
+        await this.initializeDefaultRules();
+      } catch (error) {
+        console.log('Skipping default automation setup - sheets not initialized yet');
+      }
 
     } catch (error) {
       console.error('Failed to initialize automation sheets:', error);

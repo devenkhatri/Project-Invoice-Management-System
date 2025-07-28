@@ -20,7 +20,15 @@
     "sheets:backup": "ts-node src/scripts/init-sheets.ts backup",
     "sheets:restore": "ts-node src/scripts/init-sheets.ts restore",
     "sheets:validate": "ts-node src/scripts/init-sheets.ts validate",
-    "sheets:check": "ts-node src/scripts/init-sheets.ts check"
+    "sheets:check": "ts-node src/scripts/init-sheets.ts check",
+    "setup-sheets": "ts-node src/scripts/setup-sheets.ts",
+    "setup-sheets:create": "ts-node src/scripts/setup-sheets.ts create",
+    "setup-sheets:setup": "ts-node src/scripts/setup-sheets.ts setup",
+    "setup-sheets:validate": "ts-node src/scripts/setup-sheets.ts validate",
+    "setup-sheets:sample": "ts-node src/scripts/setup-sheets.ts sample",
+    "setup-sheets:full": "ts-node src/scripts/setup-sheets.ts full",
+    "kill-port": "lsof -ti:5000 | xargs kill -9 || echo 'No process found on port 5000'",
+    "dev:clean": "npm run kill-port && npm run dev"
   },
   "keywords": [
     "project-management",

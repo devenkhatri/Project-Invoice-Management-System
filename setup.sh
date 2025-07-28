@@ -169,6 +169,7 @@ show_next_steps() {
     echo "   - Enable Google Sheets API and Google Drive API"
     echo "   - Create a service account and download the JSON key"
     echo "   - Create a Google Sheets spreadsheet and share it with the service account"
+    echo "   - Run: cd backend && npm run setup-sheets:full"
     echo ""
     echo "4. 🚀 Start the application:"
     echo "   - Backend: cd backend && npm run dev"

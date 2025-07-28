@@ -110,8 +110,8 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
   });
 });
 
-// Start server
-app.listen(PORT, async () => {
+// Start server with error handling
+const server = app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   console.log(`🔗 API base: http://localhost:${PORT}/api`);
@@ -123,7 +123,42 @@ app.listen(PORT, async () => {
     console.log('🤖 Automation service started successfully');
   } catch (error) {
     console.error('❌ Failed to start automation service:', error);
+    // Don't exit the process, just log the error
   }
+});
+
+// Handle server errors
+server.on('error', (error: any) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`);
+    console.error('💡 Solutions:');
+    console.error('   1. Kill the process using the port:');
+    console.error(`      lsof -ti:${PORT} | xargs kill -9`);
+    console.error('   2. Use a different port:');
+    console.error(`      PORT=5001 npm run dev`);
+    console.error('   3. Check if another instance is running');
+    process.exit(1);
+  } else {
+    console.error('❌ Server error:', error);
+    process.exit(1);
+  }
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('🛑 SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('🛑 SIGINT received, shutting down gracefully');
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
 });
 
 export default app;

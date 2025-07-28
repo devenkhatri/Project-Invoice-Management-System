@@ -119,6 +119,53 @@ export class SheetsService {
       headers: ['id', 'invoice_id', 'rule_id', 'amount', 'days_past_due', 'applied_at', 'created_at']
     });
 
+    // Automation and Workflow sheets
+    this.sheetConfigs.set('Automation_Rules', {
+      name: 'Automation_Rules',
+      headers: ['id', 'name', 'description', 'trigger', 'conditions', 'actions', 'is_active', 'created_at', 'updated_at']
+    });
+
+    this.sheetConfigs.set('Reminder_Schedules', {
+      name: 'Reminder_Schedules',
+      headers: ['id', 'type', 'entity_id', 'scheduled_at', 'reminder_config', 'status', 'attempts', 'last_attempt_at', 'created_at']
+    });
+
+    this.sheetConfigs.set('Notification_Templates', {
+      name: 'Notification_Templates',
+      headers: ['id', 'name', 'type', 'subject', 'body', 'variables', 'is_active', 'created_at', 'updated_at']
+    });
+
+    this.sheetConfigs.set('Workflow_Executions', {
+      name: 'Workflow_Executions',
+      headers: ['id', 'rule_id', 'trigger_data', 'status', 'started_at', 'completed_at', 'error_message', 'actions_executed']
+    });
+
+    this.sheetConfigs.set('Automation_Logs', {
+      name: 'Automation_Logs',
+      headers: ['id', 'type', 'entity_id', 'action', 'status', 'details', 'timestamp']
+    });
+
+    // File Management sheets
+    this.sheetConfigs.set('Files', {
+      name: 'Files',
+      headers: ['id', 'name', 'original_name', 'mime_type', 'size', 'path', 'drive_file_id', 'project_id', 'client_id', 'invoice_id', 'uploaded_by', 'is_public', 'download_count', 'created_at', 'updated_at']
+    });
+
+    this.sheetConfigs.set('File_Shares', {
+      name: 'File_Shares',
+      headers: ['id', 'file_id', 'shared_with', 'permission', 'expires_at', 'created_by', 'created_at']
+    });
+
+    this.sheetConfigs.set('File_Comments', {
+      name: 'File_Comments',
+      headers: ['id', 'file_id', 'user_id', 'comment', 'created_at']
+    });
+
+    this.sheetConfigs.set('File_Versions', {
+      name: 'File_Versions',
+      headers: ['id', 'file_id', 'version_number', 'drive_file_id', 'size', 'change_description', 'created_by', 'created_at']
+    });
+
     this.sheetConfigs.set('Files', {
       name: 'Files',
       headers: [
